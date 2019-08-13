@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <link rel="stylesheet" href="css/style.css" />
+    <title>whatodo</title>
+  </head>
+  <body>
+    <section class="main-clock">
+      <time class="clock">22:45</time>
+      <time class="text-paragraph date">Nedjelja, 27. srpnja 2019.</time>
+    </section>
+
+    <section class="main-focus">
+      <h1 class="text-title">
+        Hi <span class="user-name" contenteditable="true">Danilo.</span>
+      </h1>
+      <h1 class="text-paragraph user-thoughts" contenteditable="true">
+        Your thoughts..
+      </h1>
+    </section>
+
+    <section class="main-todo">
+      <div class="todo-lists">
+        <h3 class="list-title lists-header">My lists</h3>
+        <ul class="lists-container">
+          <!-- 
+          <li class="lists-item active">List 1</li>
+          <li class="lists-item">List 2</li>
+          <li class="lists-item">List 3</li>
+           -->
+        </ul>
+        <form action="" class="new-item-form new-list-form">
+          <input type="text" class="new-list input-new" />
+          <button class="button-add add-list">+</button>
+        </form>
+      </div>
+      <div class="todo-tasks">
+        <div class="tasks-header">
+          <h3 class="list-title list-name">List 1</h3>
+          <p class="task-counter">2 tasks remaining</p>
+        </div>
+        <div class="tasks-body">
+          <div class="task-item">
+            <input type="checkbox" id="task1" class="task-checkbox" />
+            <label for="task1" class="task-label" id="task1">
+              <span class="custom-checkbox"></span>Task 1</label
+            >
+          </div>
+        </div>
+        <form action="" class="new-item-form new-task-form">
+          <input type="text" class="new-task input-new" />
+          <button class="button-add add-task">+</button>
+        </form>
+        <div class="tasks-footer">
+          <button class="button-remove clear-completed-tasks">
+            Clear completed tasks
+          </button>
+          <button class="button-remove remove-list">Delete list</button>
+        </div>
+      </div>
+    </section>
+    <script src="main.js"></script>
+  </body>
+</html>
