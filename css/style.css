@@ -24,6 +24,7 @@
   margin: 0;
   padding: 0;
   color: var(--light);
+  transition: color 250ms ease-in-out;
 }
 
 ul {
@@ -108,6 +109,7 @@ input.input-new {
    Layout
 ============ */
 body {
+  position: relative;
   display: grid;
   grid-template-rows: repeat(3, minmax(1fr, max-content));
   grid-template-rows: minmax(1fr, 520px), repeat(minmax(2, 1fr, max-content));
@@ -149,6 +151,54 @@ body {
 /* ===============
    General Styles
 ================== */
+.main-settings {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: flex-end;
+  padding: 2rem;
+}
+
+.toggle-theme {
+  display: flex;
+  align-items: center;
+  position: relative;
+}
+
+.toggle-theme-title {
+  margin-right: 1rem;
+}
+
+.toggle-theme-button {
+  background-color: var(--dark);
+  color: var(--light);
+  min-width: 40px;
+  min-height: 20px;
+  position: relative;
+  border: 1px solid;
+  border-radius: 30px;
+  cursor: pointer;
+  transition: back;
+}
+
+.toggle-theme-button::after {
+  content: "";
+  position: absolute;
+  background-color: var(--light);
+  top: 0;
+  left: 0;
+  width: 50%;
+  height: 100%;
+  border-radius: 30px;
+  transition: transform ease-out 250ms;
+}
+
+.toggle-theme-button.clicked::after {
+  transform: translateX(100%);
+}
+
 .main-focus,
 .main-clock {
   display: flex;
@@ -172,6 +222,7 @@ body {
   /* background-blend-mode: overlay; */
   line-height: 1.5;
   font-family: "Quicksand", sans-serif;
+  transition: background-color ease-out 500ms;
 }
 
 .main-clock {

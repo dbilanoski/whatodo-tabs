@@ -8,35 +8,48 @@ Storage will handle saveTo and getFrom LS
 
 UI will hanlde render methods, clock and input configurations
 
+-> Added theme change component to toggle between light and dark mode
+-> Refractored code to write single data object to local storage
+  * Object contains todo lists, user settings and UI parameters
+  * Storage methods are no longer in need of parameters for chosing storage key, there is only one
+  * Render methods and event listeners functions are updated to use new data object
+  * Some methods were obsolete and are removed
+
 */
 
 // UI Elements
 
-const userName = document.querySelector(".user-name"),
+const themeToggleButton = document.querySelector(".toggle-theme-button"),
+  userName = document.querySelector(".user-name"),
   userThoughts = document.querySelector(".user-thoughts"),
   todoListInputForm = document.querySelector(".new-list-form"),
   todoListContainer = document.querySelector(".lists-container"),
-  todoTasksSection = document.querySelector(".todo-tasks");
-(todoTaskInputForm = document.querySelector(".new-task-form")),
-  (todoTaskContainer = document.querySelector(".tasks-body")),
-  (todoListTitle = document.querySelector(".list-name")),
-  (todoTaskCounter = document.querySelector(".task-counter")),
-  (buttonClearCompleted = document.querySelector(".clear-completed-tasks")),
-  (buttonDeleteList = document.querySelector(".remove-list"));
+  todoTasksSection = document.querySelector(".todo-tasks"),
+  todoTaskInputForm = document.querySelector(".new-task-form"),
+  todoTaskContainer = document.querySelector(".tasks-body"),
+  todoListTitle = document.querySelector(".list-name"),
+  todoTaskCounter = document.querySelector(".task-counter"),
+  buttonClearCompleted = document.querySelector(".clear-completed-tasks"),
+  buttonDeleteList = document.querySelector(".remove-list");
 
 let clockDOM = document.querySelector(".clock"),
   dateDOM = document.querySelector(".date");
 
 // Local storage keys
-const LOCAL_STORAGE_USER_NAME = "user.name",
-  LOCAL_STORAGE_USER_THOUGHTS = "user.thoughts",
-  LOCAL_STORAGE_TODO_LIST = "todo.lists",
-  LOCAL_STORAGE_ACTIVE_LIST_ID = "todo.activeList";
+const LOCAL_STORAGE_DATA = "wahtodo.data";
 
-let todos = JSON.parse(localStorage.getItem(LOCAL_STORAGE_TODO_LIST)) || [];
-let activeListID = JSON.parse(
-  localStorage.getItem(LOCAL_STORAGE_ACTIVE_LIST_ID)
-);
+const template = {
+  todos: [],
+  userName: "{ your name.. }",
+  userThoughts: "Your thoughts..",
+  uiParameters: {
+    theme: "dark",
+    activeListID: ""
+  }
+};
+
+let storageObject =
+  JSON.parse(localStorage.getItem(LOCAL_STORAGE_DATA)) || template;
 
 /*[{name: "List 1", ID: 1, content: {name: "Todo 1", ID: 1, completed: false}}];*/
 
@@ -57,12 +70,15 @@ class TodoTasks {
 }
 
 class Storage {
-  static save(name, key) {
-    localStorage.setItem(key, JSON.stringify(name));
+  static save() {
+    if (localStorage.getItem(LOCAL_STORAGE_DATA)) {
+      localStorage.removeItem(LOCAL_STORAGE_DATA);
+    }
+    localStorage.setItem(LOCAL_STORAGE_DATA, JSON.stringify(storageObject));
   }
 
-  static getStorageData(key) {
-    let storageData = JSON.parse(localStorage.getItem(key));
+  static getStorageData() {
+    let storageData = JSON.parse(localStorage.getItem(LOCAL_STORAGE_DATA));
     return storageData;
   }
 }
@@ -108,31 +124,44 @@ class UI {
     const inputField = element.querySelector("input");
     inputField.placeholder = message;
 
-    let i = setInterval(function() {
+    let i = setTimeout(function() {
       inputField.placeholder = "";
     }, 5000);
   }
 
+  // Theme toggle function
+  themeToggle() {
+    const root = document.documentElement;
+
+    if (storageObject.uiParameters.theme === "dark") {
+      root.style.setProperty("--dark", "#02111b");
+      root.style.setProperty("--light", "#fcf7f8");
+      themeToggleButton.classList.remove("clicked");
+    } else {
+      root.style.setProperty("--dark", "#fcf7f8");
+      root.style.setProperty("--light", "#02111b");
+      themeToggleButton.classList.add("clicked");
+    }
+  }
+
   // Render methods
   renderUserName() {
-    let currentUserName = Storage.getStorageData(LOCAL_STORAGE_USER_NAME);
+    let currentUserName = storageObject.userName;
 
-    if (currentUserName != null) {
-      userName.textContent = currentUserName;
+    if (currentUserName == null || currentUserName == "") {
+      userName.innerText = "{ your name.. }";
     } else {
-      userName.innerText = "{your name}";
+      userName.textContent = currentUserName;
     }
   }
 
   renderUserThoughts() {
-    let currentUserThoughts = Storage.getStorageData(
-      LOCAL_STORAGE_USER_THOUGHTS
-    );
+    let currentUserThoughts = storageObject.userThoughts;
 
-    if (currentUserThoughts != null) {
-      userThoughts.textContent = currentUserThoughts;
+    if (currentUserThoughts == null || currentUserThoughts == "") {
+      userThoughts.innerText = "Your thoughts..";
     } else {
-      userThoughts.textContent = "Your thoughts..";
+      userThoughts.textContent = currentUserThoughts;
     }
   }
 
@@ -184,12 +213,12 @@ class UI {
   renderLists() {
     this.clearElement(todoListContainer);
 
-    todos.forEach(function(current) {
+    storageObject.todos.forEach(function(current) {
       // create list item
       const li = document.createElement("li");
       li.classList.add("lists-item");
 
-      if (current.id === activeListID) {
+      if (current.id === storageObject.uiParameters.activeListID) {
         li.classList.add("active");
       } else {
         li.classList.remove("active");
@@ -230,11 +259,14 @@ class UI {
     this.clearElement(todoListContainer);
     this.renderLists();
 
-    const activeList = todos.find(function(current) {
-      return current.id === activeListID;
+    const activeList = storageObject.todos.find(function(current) {
+      return current.id === storageObject.uiParameters.activeListID;
     });
 
-    if (activeListID === null) {
+    if (
+      storageObject.uiParameters.activeListID === null ||
+      storageObject.uiParameters.activeListID === ""
+    ) {
       todoTasksSection.style.display = "none";
     } else {
       todoTasksSection.style.display = "";
@@ -257,6 +289,7 @@ class UI {
 
   // Main render
   appRender() {
+    this.themeToggle();
     this.clearElements();
     this.renderUserName();
     this.renderUserThoughts();
@@ -269,11 +302,20 @@ class UI {
 Event Listeners & Main logic 
 ============================ */
 
+// Theme Changer
+themeToggleButton.addEventListener("click", function() {
+  storageObject.uiParameters.theme =
+    storageObject.uiParameters.theme === "dark" ? "light" : "dark";
+
+  Storage.save();
+  ui.themeToggle();
+});
+
 // Instantiate needed objects
 const ui = new UI();
 
 // Name events
-userName.addEventListener("keyup", function(e) {
+userName.addEventListener("keydown", function(e) {
   if (
     e.keyCode === 13 ||
     e.key === "Enter" ||
@@ -285,9 +327,9 @@ userName.addEventListener("keyup", function(e) {
 });
 
 userName.addEventListener("blur", function() {
-  let name = userName.textContent;
+  storageObject.userName = userName.textContent;
 
-  Storage.save(name, LOCAL_STORAGE_USER_NAME);
+  Storage.save();
   ui.renderUserName();
 });
 
@@ -299,9 +341,9 @@ userThoughts.addEventListener("keyup", function(e) {
 });
 
 userThoughts.addEventListener("blur", function() {
-  let thoughts = userThoughts.textContent;
+  storageObject.userThoughts = userThoughts.textContent;
 
-  Storage.save(thoughts, LOCAL_STORAGE_USER_THOUGHTS);
+  Storage.save();
   ui.renderUserThoughts();
 });
 
@@ -313,14 +355,14 @@ todoListInputForm.addEventListener("submit", function(e) {
     ui.alertUser("Enter list name.", e.target);
   } else {
     const listItem = new TodoLists(newListInput.value);
-    todos.push(listItem);
-    activeListID = listItem.id;
+    storageObject.todos.push(listItem);
+    storageObject.uiParameters.activeListID = listItem.id;
 
-    Storage.save(todos, LOCAL_STORAGE_TODO_LIST);
-    Storage.save(listItem.id, LOCAL_STORAGE_ACTIVE_LIST_ID);
+    Storage.save();
 
     ui.clearInput(newListInput);
     newListInput.placeholder = "";
+
     ui.todosRender();
   }
 });
@@ -328,24 +370,22 @@ todoListInputForm.addEventListener("submit", function(e) {
 // List item click event
 todoListContainer.addEventListener("click", function(e) {
   if (e.target.tagName === "LI") {
-    activeListID = e.target.dataset.id;
-    Storage.save(activeListID, LOCAL_STORAGE_ACTIVE_LIST_ID);
+    storageObject.uiParameters.activeListID = e.target.dataset.id;
 
+    Storage.save();
     ui.todosRender();
   }
 });
 
 // Delete list click event
 buttonDeleteList.addEventListener("click", function() {
-  todos = todos.filter(function(current) {
-    return current.id != activeListID;
+  storageObject.todos = storageObject.todos.filter(function(current) {
+    return current.id != storageObject.uiParameters.activeListID;
   });
 
-  activeListID = null;
+  storageObject.uiParameters.activeListID = null;
 
-  Storage.save(todos, LOCAL_STORAGE_TODO_LIST);
-  Storage.save(activeListID, LOCAL_STORAGE_ACTIVE_LIST_ID);
-
+  Storage.save();
   ui.todosRender();
 });
 
@@ -358,14 +398,16 @@ todoTaskInputForm.addEventListener("submit", function(e) {
     ui.alertUser("Write your task here.", e.target);
   } else {
     const taskItem = new TodoTasks(input.value);
-    const activeList = todos.find(function(current) {
-      return current.id === activeListID;
+    const activeList = storageObject.todos.find(function(current) {
+      return current.id === storageObject.uiParameters.activeListID;
     });
     activeList.content.push(taskItem);
-    Storage.save(todos, LOCAL_STORAGE_TODO_LIST);
+
+    Storage.save();
 
     ui.clearInput(input);
     input.placeholder = "";
+
     ui.todosRender(activeList);
   }
 });
@@ -373,8 +415,8 @@ todoTaskInputForm.addEventListener("submit", function(e) {
 // Todo item click
 todoTaskContainer.addEventListener("change", function(e) {
   if ((e.target.tagName = "INPUT")) {
-    const activeList = todos.find(function(current) {
-      return current.id === activeListID;
+    const activeList = storageObject.todos.find(function(current) {
+      return current.id === storageObject.uiParameters.activeListID;
     });
     const selectedTask = activeList.content.find(function(current) {
       return current.id === e.target.id;
@@ -382,22 +424,22 @@ todoTaskContainer.addEventListener("change", function(e) {
 
     selectedTask.complete = e.target.checked;
 
-    Storage.save(todos, LOCAL_STORAGE_TODO_LIST);
+    Storage.save();
     ui.renderTaskCount(activeList);
   }
 });
 
 // Clear completed tasks button
 buttonClearCompleted.addEventListener("click", function() {
-  let activeList = todos.find(function(current) {
-    return current.id === activeListID;
+  let activeList = storageObject.todos.find(function(current) {
+    return current.id === storageObject.uiParameters.activeListID;
   });
 
   activeList.content = activeList.content.filter(function(current) {
     return !current.complete;
   });
 
-  Storage.save(todos, LOCAL_STORAGE_TODO_LIST);
+  Storage.save();
   ui.todosRender();
 });
 
