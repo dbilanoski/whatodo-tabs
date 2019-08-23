@@ -167,6 +167,7 @@ class UI {
 
   renderClockAndDate() {
     let now = new Date();
+    let context = this;
 
     let hour = now.getHours() < 10 ? "0" + now.getHours() : now.getHours();
     let minutes =
@@ -207,7 +208,10 @@ class UI {
     let date = `${weekDay}, ${day} ${month} ${year}`;
     dateDOM.textContent = date;
 
-    setInterval(this.renderClockAndDate, 1000);
+    //setInterval(this.renderClockAndDate, 1000);
+    setTimeout(function() {
+      context.renderClockAndDate();
+    }, 1000);
   }
 
   renderLists() {
