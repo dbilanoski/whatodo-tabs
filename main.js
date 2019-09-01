@@ -15,6 +15,8 @@ UI will hanlde render methods, clock and input configurations
   * Render methods and event listeners functions are updated to use new data object
   * Some methods were obsolete and are removed
 
+--> Issue with memory build up resolved by removing setInterval()
+
 */
 
 // UI Elements
@@ -120,9 +122,13 @@ class UI {
   }
 
   // Alert user
-  alertUser(message, element) {
+  alertUser(message, element, type = "info") {
     const inputField = element.querySelector("input");
     inputField.placeholder = message;
+
+    if (type === "error") {
+      inputField.classList.add("error");
+    }
 
     let i = setTimeout(function() {
       inputField.placeholder = "";
@@ -131,15 +137,20 @@ class UI {
 
   // Theme toggle function
   themeToggle() {
+    const theme = storageObject.uiParameters.theme;
     const root = document.documentElement;
+    const themeTitle = document.querySelector(".toggle-theme-title");
 
     if (storageObject.uiParameters.theme === "dark") {
       root.style.setProperty("--dark", "#02111b");
       root.style.setProperty("--light", "#fcf7f8");
+      themeTitle.innerText = "Too " + theme + "?";
+
       themeToggleButton.classList.remove("clicked");
     } else {
       root.style.setProperty("--dark", "#fcf7f8");
       root.style.setProperty("--light", "#02111b");
+      themeTitle.innerText = "Too bright?";
       themeToggleButton.classList.add("clicked");
     }
   }
@@ -246,12 +257,8 @@ class UI {
 
       const checked = current.complete ? "checked" : "";
       div.innerHTML = `
-          <input type="checkbox" ${checked} id="${
-        current.id
-      }" class="task-checkbox"/>
-          <label for="${current.id}" class="task-label" id="${
-        current.id
-      }"> <span class="custom-checkbox"></span>${current.name}</label>
+          <input type="checkbox" ${checked} id="${current.id}" class="task-checkbox"/>
+          <label for="${current.id}" class="task-label" id="${current.id}"> <span class="custom-checkbox"></span>${current.name}</label>
           `;
 
       todoTaskContainer.appendChild(div);
@@ -356,7 +363,7 @@ todoListInputForm.addEventListener("submit", function(e) {
   e.preventDefault();
   const newListInput = document.querySelector(".new-list");
   if (newListInput.value === "") {
-    ui.alertUser("Enter list name.", e.target);
+    ui.alertUser("Enter list name.", e.target, "error");
   } else {
     const listItem = new TodoLists(newListInput.value);
     storageObject.todos.push(listItem);
@@ -399,7 +406,7 @@ todoTaskInputForm.addEventListener("submit", function(e) {
   const input = document.querySelector(".new-task");
 
   if (input.value === "") {
-    ui.alertUser("Write your task here.", e.target);
+    ui.alertUser("Write your task here.", e.target, "error");
   } else {
     const taskItem = new TodoTasks(input.value);
     const activeList = storageObject.todos.find(function(current) {
