@@ -39,6 +39,29 @@ input[type="text"] {
   box-shadow: none;
 }
 
+textarea {
+  background: transparent;
+  border: 0;
+  max-width: 760px;
+  width: 95%;
+  height: 100%;
+  min-height: 10rem;
+  resize: none;
+  font-family: inherit;
+  overflow: hidden;
+}
+
+/* Focus states */
+a:focus,
+button:focus,
+textarea:focus,
+input:focus,
+.task-checkbox:focus + label,
+[contenteditable="true"]:focus {
+  outline: 1px solid var(--grey);
+  outline-offset: 5px;
+}
+
 /* ==========
    Typography
 ============= */
@@ -115,14 +138,32 @@ input.input-new {
   }
 }
 
-/* =========
+@media screen and (max-width: 720px) {
+  .text-title {
+    font-size: 2rem;
+  }
+
+  .text-paragraph {
+    font-size: 1rem;
+  }
+
+  .list-title {
+    font-size: 1rem;
+  }
+
+  .clock {
+    font-size: 3.8rem;
+    line-height: 1.2;
+  }
+}
+
+/* ================
    Main Grid Layout
-============ */
+====================*/
 body {
   position: relative;
   display: grid;
   grid-template-rows: repeat(3, minmax(1fr, max-content));
-  grid-template-rows: minmax(1fr, 520px), repeat(minmax(2, 1fr, max-content));
   grid-template-columns: 2fr 1fr max-content;
   grid-gap: 1rem;
   grid-template-areas:
@@ -149,7 +190,10 @@ body {
   }
 
   body {
-    grid-template-rows: repeat(3, minmax(max-content, 33vh));
+    grid-template-rows: minmax(max-content, 20vh) max-content minmax(
+        max-content,
+        60vh
+      );
     grid-template-columns: repeat(3, minmax(min-content, max-content));
     grid-gap: 2rem;
     grid-template-areas:
@@ -171,7 +215,6 @@ body {
   flex-direction: row-reverse;
   justify-content: space-between;
   padding: 2rem;
-  margin-bottom: 2rem;
 }
 
 .toggle-theme {
@@ -233,17 +276,16 @@ body {
   align-items: center;
 }
 
+.user-thoughts {
+  padding: 1rem 2rem;
+  text-align: justify;
+}
+
 body {
   min-height: 100vh;
   align-items: center;
   justify-content: center;
   background-color: var(--dark);
-  /* background-image: url("../img/bg_1.jpg"); */
-  /* background-image: url("https://source.unsplash.com/1600x900/?dark,mono"); */
-  /* background-attachment: fixed;
-  background-size: cover;
-  background-position: center; */
-  /* background-blend-mode: overlay; */
   line-height: 1.5;
   font-family: "Quicksand", sans-serif;
   transition: background-color ease-out 500ms;
@@ -253,12 +295,6 @@ body {
   margin-left: var(--spacer);
 }
 
-@media screen and (max-width: 1050px) {
-  .main-clock {
-    text-align: center;
-  }
-}
-
 .main-todo {
   --space: 1rem;
   font-size: 90%;
@@ -266,6 +302,21 @@ body {
   display: flex;
   flex-direction: row;
   max-width: 620px;
+}
+
+@media screen and (max-width: 1050px) {
+  .main-focus {
+    padding-top: 5rem;
+  }
+
+  .main-clock {
+    text-align: center;
+  }
+
+  .user-thoughts {
+    min-height: 2rem;
+    text-align: center;
+  }
 }
 
 @media screen and (max-width: 720px) {
@@ -315,7 +366,6 @@ input.input-new {
 }
 
 /* Todo tasks */
-
 .todo-tasks {
   margin-left: 3rem;
   display: flex;
@@ -391,24 +441,6 @@ input.input-new {
   text-decoration: line-through;
   text-decoration-color: var(--light);
 }
-
-/* .task-label::after {
-  content: "";
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  left: calc(0.75rem + 0.5rem);
-  right: 0;
-  height: 2px;
-  background-color: var(--light);
-  transform: scale(0);
-  transform-origin: left;
-  transition: transform 150ms ease-in-out;
-} 
-
-.task-checkbox:checked + .task-label::after {
-  transform: scale(1);
-} */
 
 .tasks-footer {
   margin-top: var(--space);
