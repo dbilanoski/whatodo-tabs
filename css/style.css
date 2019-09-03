@@ -163,13 +163,12 @@ input.input-new {
 body {
   position: relative;
   display: grid;
-  grid-template-rows: repeat(3, minmax(1fr, max-content));
-  grid-template-columns: 2fr 1fr max-content;
   grid-gap: 1rem;
-  grid-template-areas:
+  grid:
     "..... ..... ...."
-    "main main main"
-    "clock ..... todo";
+    "main main main" auto
+    "clock ..... todo" auto /
+    2fr 1fr max-content;
 }
 
 .main-focus {
@@ -190,16 +189,23 @@ body {
   }
 
   body {
-    grid-template-rows: minmax(max-content, 20vh) max-content minmax(
-        max-content,
-        60vh
-      );
-    grid-template-columns: repeat(3, minmax(min-content, max-content));
     grid-gap: 2rem;
-    grid-template-areas:
-      "..... main ....."
-      "..... clock ....."
-      "..... todo .....";
+    grid:
+      "..... main ....." auto
+      "..... clock ....." min-content
+      "..... todo ....." auto /
+      1fr 3fr 1fr;
+  }
+}
+
+@media screen and (max-width: 720px) {
+  body {
+    grid-gap: 1rem;
+    grid:
+      "..... main ....." auto
+      "..... clock ....." min-content
+      "..... todo ....." auto /
+      2rem 1fr 2rem;
   }
 }
 
@@ -278,6 +284,7 @@ body {
 
 .user-thoughts {
   padding: 1rem 2rem;
+  cursor: text;
   text-align: justify;
 }
 
@@ -315,11 +322,14 @@ body {
 
   .user-thoughts {
     min-height: 2rem;
-    text-align: center;
   }
 }
 
 @media screen and (max-width: 720px) {
+  .user-thoughts {
+    text-align: center;
+  }
+
   .main-todo {
     flex-direction: column;
   }
@@ -461,8 +471,13 @@ input.input-new {
 }
 
 @media screen and (max-width: 720px) {
+  .todo-lists {
+    margin-bottom: 1rem;
+  }
+
   .todo-tasks {
     margin-left: 0;
-    margin-top: 2rem;
+    margin-top: 1rem;
+    margin-bottom: 1rem;
   }
 }

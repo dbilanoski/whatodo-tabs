@@ -43,7 +43,8 @@ const LOCAL_STORAGE_DATA = "wahtodo.data";
 const template = {
   todos: [],
   userName: "{ your name.. }",
-  userThoughts: "Your thoughts..",
+  userThoughts:
+    "Your thoughts.. \n\nYou can write freely here. Ideal place to make a note, scribble something you need to remember or paste a quote from Kant's The Metaphysics of Morals: \n\n“But freedom is a mere Idea, the objective reality of which can in no wise be shown according to the laws of nature, and consequently not in any possible experience; and for this reason it can never be comprehended or understood, because we cannot support it by any sort of example or analogy.”",
   uiParameters: {
     theme: "dark",
     activeListID: ""
@@ -144,15 +145,23 @@ class UI {
     if (storageObject.uiParameters.theme === "dark") {
       root.style.setProperty("--dark", "#02111b");
       root.style.setProperty("--light", "#fcf7f8");
+      root.style.setProperty("--red", "#ec7357");
       themeTitle.innerText = "Too " + theme + "?";
 
       themeToggleButton.classList.remove("clicked");
     } else {
       root.style.setProperty("--dark", "#fcf7f8");
       root.style.setProperty("--light", "#02111b");
+      root.style.setProperty("--red", "#ad2405");
       themeTitle.innerText = "Too bright?";
       themeToggleButton.classList.add("clicked");
     }
+  }
+
+  // Dynamic Resizer
+  autoGrow(element) {
+    element.style.height = "1rem";
+    element.style.height = element.scrollHeight + "px";
   }
 
   // Render methods
@@ -171,8 +180,10 @@ class UI {
 
     if (currentUserThoughts == null || currentUserThoughts == "") {
       userThoughts.innerText = "Your thoughts..";
+      this.autoGrow(userThoughts);
     } else {
       userThoughts.textContent = currentUserThoughts;
+      this.autoGrow(userThoughts);
     }
   }
 
@@ -356,6 +367,14 @@ userThoughts.addEventListener("blur", function() {
 
   Storage.save();
   ui.renderUserThoughts();
+});
+
+userThoughts.addEventListener("input", function(e) {
+  ui.autoGrow(e.target);
+});
+
+window.addEventListener("resize", function() {
+  ui.autoGrow(userThoughts);
 });
 
 // Tasklist events
