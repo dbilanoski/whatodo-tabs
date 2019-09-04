@@ -252,6 +252,7 @@ class UI {
 
       li.dataset.id = current.id;
       li.textContent = current.name;
+      li.tabIndex = 0;
       todoListContainer.appendChild(li);
     });
   }

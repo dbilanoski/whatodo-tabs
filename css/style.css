@@ -57,7 +57,8 @@ button:focus,
 textarea:focus,
 input:focus,
 .task-checkbox:focus + label,
-[contenteditable="true"]:focus {
+[contenteditable="true"]:focus,
+.lists-item:focus {
   outline: 1px solid var(--grey);
   outline-offset: 5px;
 }
@@ -242,7 +243,7 @@ body {
   border: 1px solid;
   border-radius: 30px;
   cursor: pointer;
-  transition: back;
+  transition: background-color 250ms ease-out;
 }
 
 .toggle-theme-button::after {
@@ -259,6 +260,10 @@ body {
 
 .toggle-theme-button.clicked::after {
   transform: translateX(100%);
+}
+
+.goto-google {
+  transition: opacity 100ms ease-out;
 }
 
 .goto-google:hover,
@@ -343,7 +348,7 @@ body {
 .lists-item {
   cursor: pointer;
   margin-bottom: 0.25em;
-  transition: color 200ms ease-out, transform 200ms ease-out;
+  transition: color 100ms ease-out;
 }
 
 .lists-item.active {
@@ -351,9 +356,10 @@ body {
 }
 
 .lists-item:hover,
-.lists-item:focus {
+.lists-item:focus,
+.task-item:hover .task-label,
+.task-checkbox:focus + label {
   color: var(--grey);
-  transform: scale(0.98);
 }
 
 .new-item-form {
@@ -424,7 +430,7 @@ input.input-new {
   cursor: pointer;
   line-height: 2;
   text-decoration-color: transparent;
-  transition: text-decoration-color 250ms ease-in-out;
+  transition: text-decoration-color 250ms ease-in-out, color 100ms ease-out;
 }
 
 .custom-checkbox {
@@ -462,7 +468,7 @@ input.input-new {
 
 .button-remove {
   cursor: pointer;
-  transition: color 200ms ease-out;
+  transition: color 100ms ease-out;
 }
 
 .button-remove:hover,
