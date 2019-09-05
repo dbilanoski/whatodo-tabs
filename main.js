@@ -44,7 +44,7 @@ const template = {
   todos: [],
   userName: "{ your name.. }",
   userThoughts:
-    "Your thoughts.. \n\nYou can write freely here. Ideal place to make a note, scribble something you need to remember or paste a quote from Kant's The Metaphysics of Morals: \n\n“But freedom is a mere Idea, the objective reality of which can in no wise be shown according to the laws of nature, and consequently not in any possible experience; and for this reason it can never be comprehended or understood, because we cannot support it by any sort of example or analogy.”",
+    "Your thoughts.. \n\nYou can write freely here. Ideal place to make a note, define your daily focus or scribble something you need to remember.",
   uiParameters: {
     theme: "dark",
     activeListID: ""
@@ -230,7 +230,6 @@ class UI {
     let date = `${weekDay}, ${day} ${month} ${year}`;
     dateDOM.textContent = date;
 
-    //setInterval(this.renderClockAndDate, 1000);
     setTimeout(function() {
       context.renderClockAndDate();
     }, 1000);
@@ -364,7 +363,7 @@ userThoughts.addEventListener("keyup", function(e) {
 });
 
 userThoughts.addEventListener("blur", function() {
-  storageObject.userThoughts = userThoughts.textContent;
+  storageObject.userThoughts = userThoughts.value;
 
   Storage.save();
   ui.renderUserThoughts();
