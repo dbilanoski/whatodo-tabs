@@ -1,24 +1,3 @@
-/* 
-
-Todo lists will handle todo list item creation
-
-Todo tasks will handle todo task item creation
-
-Storage will handle saveTo and getFrom LS
-
-UI will hanlde render methods, clock and input configurations
-
--> Added theme change component to toggle between light and dark mode
--> Refractored code to write single data object to local storage
-  * Object contains todo lists, user settings and UI parameters
-  * Storage methods are no longer in need of parameters for chosing storage key, there is only one
-  * Render methods and event listeners functions are updated to use new data object
-  * Some methods were obsolete and are removed
-
---> Issue with memory build up resolved by removing setInterval()
-
-*/
-
 // UI Elements
 
 const themeToggleButton = document.querySelector(".toggle-theme-button"),
@@ -53,8 +32,6 @@ const template = {
 
 let storageObject =
   JSON.parse(localStorage.getItem(LOCAL_STORAGE_DATA)) || template;
-
-/*[{name: "List 1", ID: 1, content: {name: "Todo 1", ID: 1, completed: false}}];*/
 
 class TodoLists {
   constructor(name) {
@@ -324,6 +301,9 @@ class UI {
 Event Listeners & Main logic 
 ============================ */
 
+// Instantiate needed objects
+const ui = new UI();
+
 // Theme Changer
 themeToggleButton.addEventListener("click", function() {
   storageObject.uiParameters.theme =
@@ -332,9 +312,6 @@ themeToggleButton.addEventListener("click", function() {
   Storage.save();
   ui.themeToggle();
 });
-
-// Instantiate needed objects
-const ui = new UI();
 
 // Name events
 userName.addEventListener("keydown", function(e) {
@@ -473,5 +450,5 @@ buttonClearCompleted.addEventListener("click", function() {
   ui.todosRender();
 });
 
-// Main DOM render
+// Start the app
 ui.appRender();
